@@ -23,6 +23,13 @@ async def process_get_tickets_command(message: Message):
         await message.answer(**ticket_post(ticket_info, ticket_number))
 
 
+@router.message(Command('tickets_adm_original_ru'))
+async def process_get_tickets_command(message: Message):
+    await message.answer(text="Сейчас тебе придет список билетов администрации ПДД")
+    for ticket_number, ticket_info in tickets.get_tickets_adm_original_ru().items():
+        await message.answer(**ticket_post(ticket_info, ticket_number))
+
+
 @router.message(Command('tickets_translated_ru'))
 async def process_get_tickets_command(message: Message):
     await message.answer(text="Сейчас тебе придет список переведенных билетов ПДД со страницы 41-44")
@@ -77,4 +84,3 @@ async def process_button_click(callback: CallbackQuery):
 @router.callback_query()
 async def process_button_click(callback: CallbackQuery):
     await callback.answer(text=f"Ответ не обработан")
-

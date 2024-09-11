@@ -11,6 +11,11 @@ def get_tickets_med_original_ru():
         return json.load(file)
 
 
+def get_tickets_adm_original_ru():
+    with open('data/tickets-adm-original-ru.json', 'r') as file:
+        return json.load(file)
+
+
 def get_tickets_original_ru():
     with open('data/tickets-original-ru.json', 'r') as file:
         return json.load(file)
