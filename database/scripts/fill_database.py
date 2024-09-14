@@ -4,7 +4,7 @@ import parser
 
 
 def fill_languages():
-    languages = parser.get_languages()
+    languages = json_utils.get_languages()
     with connect_to_db() as conn:
         cursor = conn.cursor()
         for lang in languages:
@@ -103,6 +103,38 @@ def fill_tickets():
         conn.commit()
 
 
+def fill_ticket_topic_relations():
+    """
+    :return: void
+    """
+    ticket_topic_relations = parser.get_ticket_topic_relations()
+    with connect_to_db() as conn:
+        cursor = conn.cursor()
+        for topic_id, ticket_ids in ticket_topic_relations.items():
+            for ticket_id in ticket_ids:
+                cursor.execute("""
+                            INSERT INTO ticket_topic (ticket_id, topic_id)
+                            VALUES (?,?)
+                        """, (ticket_id, topic_id))
+        conn.commit()
+
+
+def fill_ticket_category_relations():
+    """
+    :return: void
+    """
+    ticket_category_relations = parser.get_ticket_category_relations()
+    with connect_to_db() as conn:
+        cursor = conn.cursor()
+        for category_id, ticket_ids in ticket_category_relations.items():
+            for ticket_id in ticket_ids:
+                cursor.execute("""
+                            INSERT INTO ticket_category (ticket_id, category_id)
+                            VALUES (?,?)
+                        """, (ticket_id, category_id))
+        conn.commit()
+
+
 def prepare():
     """
     Prepare before filling the database:
@@ -120,3 +152,5 @@ def fill():
     fill_topics()
     fill_categories()
     fill_tickets()
+    fill_ticket_topic_relations()
+    fill_ticket_category_relations()
