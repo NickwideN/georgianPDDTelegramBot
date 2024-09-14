@@ -22,7 +22,7 @@ for page in range(1, 3):
             answer = quote_answer.text.strip().split('\n')
             if len(answer) > 1:
                 tickets[ticketID][answer[0]] = answer[2]
-                if quote_answer.has_attr('data-is-correct-list'):
+                if quote_answer.has_attr('database-is-correct-list'):
                     tickets[ticketID]['correct_answer'] = answer[0]
 
 with open('tickets-adm-original-ru.json', 'w') as f:

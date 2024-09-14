@@ -1,0 +1,34 @@
+[
+    {
+        "code": "ka",
+        "description": "ქართული (Georgian)"
+    },
+    {
+        "code": "ab",
+        "description": "Аҧсшәа (Abkhazian)"
+    },
+    {
+        "code": "az",
+        "description": "Azərbaycan (Azerbaijani)"
+    },
+    {
+        "code": "en",
+        "description": "English"
+    },
+    {
+        "code": "hy",
+        "description": "Հայերեն (Armenian)"
+    },
+    {
+        "code": "os",
+        "description": "Ирон (Ossetian)"
+    },
+    {
+        "code": "ru",
+        "description": "Русский (Russian)"
+    },
+    {
+        "code": "tr",
+        "description": "Türkçe (Turkish)"
+    }
+]

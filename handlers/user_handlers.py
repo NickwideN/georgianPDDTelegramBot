@@ -3,7 +3,7 @@ import re
 from aiogram import Router, F
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message, CallbackQuery
-from data import tickets
+from database import tickets
 
 from lexicon.lexicon_ru import LEXICON_RU
 from keyboards.keyboards import create_inline_kb
