@@ -48,7 +48,7 @@ def connect_to_db(db_path: str = DB_PATH) -> Generator[Connection, None, None]:
     """
     connection = None
     try:
-        connection = get_connection()
+        connection = get_connection(db_path)
         yield connection
     finally:
         if connection:
