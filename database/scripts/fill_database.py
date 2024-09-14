@@ -1,9 +1,18 @@
 from database.connection import connect_to_db
 import json_utils
 import parser
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(asctime)s] #%(levelname)-8s %(filename)s:'
+           '%(lineno)d - %(name)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
 def fill_languages():
+    logger.info("Filling languages...")
     languages = json_utils.get_languages()
     with connect_to_db() as conn:
         cursor = conn.cursor()
@@ -16,6 +25,7 @@ def fill_languages():
 
 
 def fill_topics():
+    logger.info("Filling topics...")
     topics = json_utils.get_topics_json()
     with connect_to_db() as conn:
         cursor = conn.cursor()
@@ -37,6 +47,8 @@ def fill_topics():
 
 
 def fill_categories():
+    logger.info("Filling categories...")
+
     categories = json_utils.get_categories_json()
     with connect_to_db() as conn:
         cursor = conn.cursor()
@@ -58,17 +70,16 @@ def fill_categories():
 
 
 def fill_tickets():
+    logger.info("Filling tickets...")
+
     with connect_to_db() as conn:
-        print("Start")
         cursor = conn.cursor()
         cursor.execute('SELECT id, code FROM language')
         first_loop_iteration = True
         answer_ids = {}
         for language_id, language_code in cursor.fetchall():
-            print("===== Start new language:", language_code, " =======")
             tickets = parser.get_tickets(language_code)
             for ticket_id, ticket_data in tickets.items():
-                print("--- Start ticket:", ticket_id, "---")
                 for answer_number, answer_text in ticket_data['answers'].items():
                     # Save the answers to the database
                     if first_loop_iteration:
@@ -90,9 +101,9 @@ def fill_tickets():
                 # Save the question to the database
                 if first_loop_iteration:
                     cursor.execute("""
-                                        INSERT INTO ticket (id, correct_answer_id)
-                                        VALUES (?, ?)
-                                    """, (ticket_id, correct_answer_id))
+                                        INSERT INTO ticket (id, correct_answer_id, img_source)
+                                        VALUES (?, ?, ?)
+                                    """, (ticket_id, correct_answer_id, ticket_data['img_source']))
 
                 # Save the translations of the questions to the database
                 cursor.execute("""
@@ -107,6 +118,8 @@ def fill_ticket_topic_relations():
     """
     :return: void
     """
+    logger.info("Filling ticket_topic_relations...")
+
     ticket_topic_relations = parser.get_ticket_topic_relations()
     with connect_to_db() as conn:
         cursor = conn.cursor()
@@ -123,6 +136,9 @@ def fill_ticket_category_relations():
     """
     :return: void
     """
+
+    logger.info("Filling ticket_category_relations...")
+
     ticket_category_relations = parser.get_ticket_category_relations()
     with connect_to_db() as conn:
         cursor = conn.cursor()
@@ -148,9 +164,18 @@ def prepare():
 
 
 def fill():
+    """
+    Fill the database with data.
+    :return: void
+    """
     fill_languages()
     fill_topics()
     fill_categories()
     fill_tickets()
     fill_ticket_topic_relations()
     fill_ticket_category_relations()
+
+
+if __name__ == '__main__':
+    if json_utils.check_files_filled():
+        fill()

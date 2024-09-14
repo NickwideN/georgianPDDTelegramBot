@@ -54,7 +54,9 @@ async def process_get_tickets_command(message: Message):
         return
     else:
         for ticket_number, ticket_info in tickets_favorites_original_ru.items():
-            await message.answer(**ticket_post(ticket_info, ticket_number))
+            ticket_postd = ticket_post(ticket_info, ticket_number)
+            await message.answer_photo("https://teoria.on.ge/files/new/c6b5d807dcf42a963da6523ff2816981.jpg",
+                                       ticket_postd['text'], reply_markup=ticket_postd['reply_markup'])
 
 
 def ticket_post(ticket_info, ticket_number):

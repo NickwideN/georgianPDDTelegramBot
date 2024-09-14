@@ -1,5 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_soup(url_path: str, lang_code: str = 'ka') -> BeautifulSoup:
@@ -12,6 +15,8 @@ def get_soup(url_path: str, lang_code: str = 'ka') -> BeautifulSoup:
 
 
 def get_languages():
+    logger.info("Getting languages...")
+
     languages = []
     settings_lang = get_soup('/tickets').find('li', class_='settings-lang')
     for quote in settings_lang.find_all('li', class_='li-2'):
@@ -26,6 +31,8 @@ def get_topics_ka_lang():
     """
     :return: List of topics in the format in georgian: [{'id': int, 'text': str}]
     """
+    logger.info("Getting topics...")
+
     topics = []
     soup = get_soup('/tickets')
     tickets_topics_list = soup.find('ul', class_='tickets-topics-list')
@@ -42,6 +49,8 @@ def get_categories_ka_lang():
     """
     :return: List of categories in the format in georgian: [{'id': int, 'text': str}]
     """
+    logger.info("Getting categories...")
+
     categories = []
     soup = get_soup('/tickets')
     tickets_cats_list = soup.find('ul', class_='tickets-cats-list')
@@ -60,6 +69,7 @@ def get_tickets(lang_code):
     :return: Dict of tickets in the format: {
         ticket_id: {
             'title': str,
+            'img_source': str|None,
             'answers': {
                 answer_id: str,
                 answer_id: str,
@@ -68,9 +78,12 @@ def get_tickets(lang_code):
         }
     }
     """
+    logger.info(f'Getting tickets in {lang_code}...')
+
     tickets = {}
     for page in range(1, 92):  # Так как есть только 44 страницы с билетами
-        print(f' ------- Parse page {page} -------------')
+        logger.info(f'------- Parse page {page} -------------')
+
         soup = get_soup(f'/tickets/0?page={page}', lang_code)
 
         quotes = soup.find_all('article', class_='ticket-container')
@@ -80,11 +93,16 @@ def get_tickets(lang_code):
                 'title': quote.find('div', class_='t-question').p.span.text,
                 'answers': {},
             }
+            if quote.figure:
+                tickets[ticket_id]['img_source'] = quote.figure.img['src']
+            else:
+                tickets[ticket_id]['img_source'] = None
+
             for quote_answer in quote.find('div', class_='t-cover').find_all('p', class_='t-answer'):
                 answer = quote_answer.text.strip().split('\n')
-                answer_id = int(answer[0])
-                answer_text = answer[2]
                 if len(answer) > 1:
+                    answer_id = int(answer[0])
+                    answer_text = answer[2]
                     tickets[ticket_id]['answers'][answer_id] = answer_text
                     if quote_answer.has_attr('data-is-correct-list'):
                         tickets[ticket_id]['correct_answer'] = answer_id
@@ -95,18 +113,21 @@ def get_ticket_topic_relations():
     """
     :return: Dict of ticket-topic relations: {topic_id: [ticket_id, ticket_id,...]}
     """
+    logger.info("Getting ticket-topic relations...")
+
     relations = {}
 
     topics = get_topics_ka_lang()
     for topic in topics:
-        print(f'======== Parse topic {topic["id"]} ========')
+        logger.info(f'======== Parse topic {topic["id"]} =======')
         relations[topic['id']] = []
 
         soup = get_soup(f'/tickets/0/{topic['id']}')
         page_options = soup.find('select', class_='paginator-select').find_all('option')
         for page_option in page_options:
             page = page_option.attrs['value']
-            print(f'------- Parse page {page} -------------')
+            logger.info(f'------- Parse page {page} -------------')
+
             soup_page = get_soup(f'/tickets/0/{topic['id']}?page={page}')
             ticket_containers = soup_page.find_all('article', class_='ticket-container')
 
@@ -117,18 +138,23 @@ def get_ticket_topic_relations():
 
 
 def get_ticket_category_relations():
+    logger.info("Getting ticket-category relations...")
+
     relations = {}
 
     categories = get_categories_ka_lang()
     for category in categories:
-        print(f'======== Parse category {category["id"]} ========')
+        logger.info(f'======== Parse category {category["id"]} ========')
+
         relations[category['id']] = []
 
         soup = get_soup(f'/tickets/{category['id']}')
         page_options = soup.find('select', class_='paginator-select').find_all('option')
         for page_option in page_options:
             page = page_option.attrs['value']
-            print(f'------- Parse page {page} -------------')
+
+            logger.info(f'------- Parse page {page} -------------')
+
             soup_page = get_soup(f'/tickets/{category['id']}?page={page}')
             ticket_containers = soup_page.find_all('article', class_='ticket-container')
 

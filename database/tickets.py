@@ -2,22 +2,22 @@ import json
 
 
 def get_tickets_translated_ru():
-    with open('database/tickets-translated-ru.json_sources', 'r') as file:
+    with open('database/tickets-translated-ru.json', 'r') as file:
         return json.load(file)
 
 
 def get_tickets_med_original_ru():
-    with open('database/tickets-med-original-ru.json_sources', 'r') as file:
+    with open('database/tickets-med-original-ru.json', 'r') as file:
         return json.load(file)
 
 
 def get_tickets_adm_original_ru():
-    with open('database/tickets-adm-original-ru.json_sources', 'r') as file:
+    with open('database/tickets-adm-original-ru.json', 'r') as file:
         return json.load(file)
 
 
 def get_tickets_original_ru():
-    with open('database/tickets-original-ru.json_sources', 'r') as file:
+    with open('database/tickets-original-ru.json', 'r') as file:
         return json.load(file)
 
 

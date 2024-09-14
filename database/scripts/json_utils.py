@@ -48,6 +48,40 @@ def create_categories_json():
     with open('json_sources/categories.json', 'w') as f:
         json.dump(category, f, indent=4, ensure_ascii=False)
 
+
 def get_categories_json():
     with open('json_sources/categories.json', 'r') as file:
         return json.load(file)
+
+
+def check_files_filled():
+    try:
+        with open('json_sources/languages.json', 'r') as file:
+            data = json.load(file)
+            if not bool(data):
+                print(f"languages.json is empty")
+                return False
+
+        with open('json_sources/topics.json', 'r') as file:
+            data = json.load(file)
+            if not bool(data):
+                print("topics.json is empty")
+                return False
+            if not data['1']['ru']:
+                print("topics.json not translated")
+                return False
+
+        with open('json_sources/categories.json', 'r') as file:
+            data = json.load(file)
+            if not bool(data):
+                print("categories.json is empty")
+                return False
+            if not data['1']['ru']:
+                print("categories.json not translated")
+                return False
+
+        return True
+
+    except Exception as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+        return False
