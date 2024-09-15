@@ -161,6 +161,7 @@ def prepare():
     json_utils.create_languages_json()
     json_utils.create_topics_json()
     json_utils.create_categories_json()
+    json_utils.create_ticket_descriptions_json()
 
 
 def fill():

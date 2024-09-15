@@ -108,6 +108,27 @@ def get_tickets(lang_code):
                         tickets[ticket_id]['correct_answer'] = answer_id
     return tickets
 
+def get_ticket_descriptions_ka():
+    """
+    :return: Dict of ticket descriptions: {ticket_id: str}
+    """
+    logger.info("Getting ticket descriptions...")
+
+    descriptions = {}
+
+    for page in range(1, 92):  # Так как есть только 44 страницы с билетами
+        logger.info(f'------- Parse page {page} -------------')
+
+        soup = get_soup(f'/tickets/0?page={page}')
+
+        quotes = soup.find_all('article', class_='ticket-container')
+        for quote in quotes:
+            ticket_id = int(quote.find('div', class_='t-num').text.replace('#', ''))
+            description_ka = quote.find('div', class_='desc-box').div.p.text
+            descriptions[ticket_id] = description_ka
+
+    return descriptions
+
 
 def get_ticket_topic_relations():
     """

@@ -53,6 +53,27 @@ def get_categories_json():
     with open('json_sources/categories.json', 'r') as file:
         return json.load(file)
 
+def create_ticket_descriptions_json():
+    languages = get_languages()
+
+    descriptions = {}
+    for ticket_id, description_ka in parser.get_ticket_descriptions_ka().items():
+        descriptions[ticket_id] = {
+            'ka': description_ka
+        }
+        for lang in languages:
+            if lang['code'] != 'ka':
+                descriptions[ticket_id][lang['code']] = ''
+
+    with open('json_sources/ticket_descriptions.json', 'w') as f:
+        json.dump(descriptions, f, indent=4, ensure_ascii=False)
+
+create_ticket_descriptions_json()
+
+def get_ticket_descriptions_json():
+    with open('json_sources/ticket_descriptions.json', 'r') as file:
+        return json.load(file)
+
 
 def check_files_filled():
     try:
