@@ -68,8 +68,6 @@ def create_ticket_descriptions_json():
     with open('json_sources/ticket_descriptions.json', 'w') as f:
         json.dump(descriptions, f, indent=4, ensure_ascii=False)
 
-create_ticket_descriptions_json()
-
 def get_ticket_descriptions_json():
     with open('json_sources/ticket_descriptions.json', 'r') as file:
         return json.load(file)

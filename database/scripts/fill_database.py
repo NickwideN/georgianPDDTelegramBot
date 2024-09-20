@@ -80,36 +80,36 @@ def fill_tickets():
         for language_id, language_code in cursor.fetchall():
             tickets = parser.get_tickets(language_code)
             for ticket_id, ticket_data in tickets.items():
-                for answer_number, answer_text in ticket_data['answers'].items():
-                    # Save the answers to the database
-                    if first_loop_iteration:
-                        cursor.execute("""
-                                    INSERT INTO answer (ticket_id, number)
-                                    VALUES (?,?)
-                                """, (ticket_id, answer_number))
-                        answer_ids[f'{ticket_id}_{answer_number}'] = cursor.lastrowid
-                        if ticket_data['correct_answer'] == answer_number:
-                            correct_answer_id = answer_ids[f'{ticket_id}_{answer_number}']
-
-                    # Save the translations of the answers to the database
-                    answer_id = answer_ids[f'{ticket_id}_{answer_number}']
-                    cursor.execute("""
-                                INSERT INTO answer_translation (answer_id, language_id, text)
-                                VALUES (?,?,?)
-                            """, (answer_id, language_id, answer_text))
-
-                # Save the question to the database
-                if first_loop_iteration:
-                    cursor.execute("""
-                                        INSERT INTO ticket (id, correct_answer_id, img_source)
-                                        VALUES (?, ?, ?)
-                                    """, (ticket_id, correct_answer_id, ticket_data['img_source']))
+                # for answer_number, answer_text in ticket_data['answers'].items():
+                #     # Save the answers to the database
+                #     if first_loop_iteration:
+                #         cursor.execute("""
+                #                     INSERT INTO answer (ticket_id, number)
+                #                     VALUES (?,?)
+                #                 """, (ticket_id, answer_number))
+                #         answer_ids[f'{ticket_id}_{answer_number}'] = cursor.lastrowid
+                #         if ticket_data['correct_answer'] == answer_number:
+                #             correct_answer_id = answer_ids[f'{ticket_id}_{answer_number}']
+                #
+                #     # Save the translations of the answers to the database
+                #     answer_id = answer_ids[f'{ticket_id}_{answer_number}']
+                #     cursor.execute("""
+                #                 INSERT INTO answer_translation (answer_id, language_id, text)
+                #                 VALUES (?,?,?)
+                #             """, (answer_id, language_id, answer_text))
+                #
+                # # Save the question to the database
+                # if first_loop_iteration:
+                #     cursor.execute("""
+                #                         INSERT INTO ticket (id, correct_answer_id, img_source)
+                #                         VALUES (?, ?, ?)
+                #                     """, (ticket_id, correct_answer_id, ticket_data['img_source']))
 
                 # Save the translations of the questions to the database
                 cursor.execute("""
                                                 INSERT INTO ticket_translation (ticket_id, language_id, text)
                                                 VALUES (?,?,?)
-                                            """, (ticket_id, language_id, answer_text))
+                                            """, (ticket_id, language_id, ticket_data['title']))
             first_loop_iteration = False
         conn.commit()
 
@@ -178,5 +178,6 @@ def fill():
 
 
 if __name__ == '__main__':
-    if json_utils.check_files_filled():
-        fill()
+    fill_tickets()
+    # if json_utils.check_files_filled():
+    #     fill()
